@@ -7,7 +7,8 @@ export const loginAdmin = async (email, password) => {
     return { success: true, user: userCredential.user };
   } catch (error) {
     console.error("Login Error:", error);
-    throw new Error("Invalid admin credentials");
+    // Throw the original error or a more descriptive one
+    throw error;
   }
 };
 

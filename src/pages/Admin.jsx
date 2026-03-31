@@ -62,7 +62,9 @@ export default function Admin() {
         await loginAdmin(email, password)
       }
     } catch (error) {
-      setLoginError('Invalid credentials')
+      // Map error codes to user-friendly messages, but keep the code visible for diagnosis
+      const errorMessage = error.code ? `${error.code}: ${error.message}` : 'Invalid credentials'
+      setLoginError(errorMessage)
     }
   }
 
