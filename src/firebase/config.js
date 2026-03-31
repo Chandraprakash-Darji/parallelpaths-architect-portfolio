@@ -2,14 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
  
-// Diagnostic to check if the variables are correctly reaching your code
-console.log("Firebase Config Status:", {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? "Detected" : "MISSING",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ? "Detected" : "MISSING",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ? "Detected" : "MISSING",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID ? "Detected" : "MISSING"
-});
-
+// Initialize Firebase
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -19,7 +12,6 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 // Initialize Services

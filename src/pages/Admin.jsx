@@ -92,25 +92,32 @@ export default function Admin() {
     if (!file) return
 
     setUploadingSlot(slot)
+    setUploadingSlot(slot)
     try {
-      const apiKey = import.meta.env.VITE_IMGBB_API_KEY
-      if (!apiKey) throw new Error('ImgBB API key missing')
+      const reader = new FileReader()
+      reader.onloadend = async () => {
+        const base64String = reader.result.split(',')[1] // Strip the data:image/png;base64, prefix
+        
+        const resp = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image: base64String
+          })
+        })
+        
+        const data = await resp.json()
+        if (!data.success) throw new Error(data.message || 'Upload failed')
 
-      const bbData = new FormData()
-      bbData.append('image', file)
-
-      const resp = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: 'POST',
-        body: bbData
-      })
-      const data = await resp.json()
-      if (!data.success) throw new Error('Upload failed')
-
-      const imageUrl = data.data.url
-      await updateSetting(slot, imageUrl)
-      
-      setSettings(prev => ({ ...prev, [slot]: imageUrl }))
-      window.alert('Image updated successfully!')
+        const imageUrl = data.data.url
+        await updateSetting(slot, imageUrl)
+        
+        setSettings(prev => ({ ...prev, [slot]: imageUrl }))
+        window.alert('Secondary-level assets updated successfully via secure proxy!')
+      }
+      reader.readAsDataURL(file)
     } catch (err) {
       console.error(err)
       window.alert('Failed to update image: ' + err.message)
