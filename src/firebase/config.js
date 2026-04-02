@@ -13,6 +13,13 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+// --- INITIAL CONFIG VALIDATION ---
+Object.entries(firebaseConfig).forEach(([key, value]) => {
+  if (!value) {
+    console.warn(`[Firebase] Warning: Missing ${key} in environment variables.`);
+  }
+});
+
 const app = initializeApp(firebaseConfig);
 
 // Initialize Services

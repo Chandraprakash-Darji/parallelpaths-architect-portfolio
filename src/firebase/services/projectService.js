@@ -29,7 +29,7 @@ export const createProject = async (projectData) => {
       throw new Error(`Missing required fields: ${missing.join(", ")}`);
     }
 
-    console.log("--- Firestore Write: Creating Project ---");
+    console.log(`--- Firestore Write: Creating Project to [${PROJECTS_COLLECTION}] ---`);
     console.log("Payload:", JSON.stringify(projectData, null, 2));
 
     const docRef = await addDoc(collection(db, PROJECTS_COLLECTION), {
@@ -41,8 +41,9 @@ export const createProject = async (projectData) => {
     console.log("Firestore Success: Project ID", docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error("Firestore Write Error (Create):", error);
-    // Return original firebase error if available, else generic
+    console.error("Firestore Write Error (Create):");
+    console.error("Status:", error.code);
+    console.error("Message:", error.message);
     throw new Error(error.message || "Failed to create project entry");
   }
 };

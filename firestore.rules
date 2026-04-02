@@ -3,31 +3,24 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // --- PROJECTS COLLECTION ---
-    // Public: Can search and view project details
-    // Admin: Full control to add, edit, or remove work
-    match /projects/{projectId} {
+    match /projects/{document=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if true;
     }
 
     // --- SETTINGS COLLECTION ---
-    // Public: Must read site content (Hero images, About portrait, etc)
-    // Admin: Full control to update global page content
     match /settings/{settingId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
     // --- CONTACTS COLLECTION ---
-    // Public: Can ONLY submit (create) a form. CANNOT see other people's messages.
-    // Admin: Full control to view and manage inquiries
     match /contacts/{contactId} {
       allow create: if true;
       allow read, update, delete: if request.auth != null;
     }
 
     // --- DEFAULT SAFETY LOCK ---
-    // Deny everything else unless explicitly specified above
     match /{document=**} {
       allow read, write: if false;
     }

@@ -20,8 +20,10 @@ export const submitContactForm = async (data) => {
 
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error("Error submitting contact form:", error);
-    throw new Error("Failed to submit contact form. Please try again later.");
+    console.error("Firestore Write Error (Contact):");
+    console.error("Status:", error.code);
+    console.error("Message:", error.message);
+    throw new Error(error.message || "Failed to submit contact form");
   }
 };
 
