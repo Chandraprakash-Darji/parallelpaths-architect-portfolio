@@ -6,7 +6,9 @@ import { fetchProjects, deleteProject } from '../firebase/services/projectServic
 import { useNavigate } from 'react-router-dom'
 import { fetchContacts } from '../firebase/services/contactService'
 import { getSettings, updateSetting } from '../firebase/services/settingsService'
+import { uploadFile } from '../firebase/services/storageService'
 import ProjectModal from '../components/ProjectModal'
+import ImageCropModal from '../components/ImageCropModal'
 
 export default function Admin() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -21,6 +23,8 @@ export default function Admin() {
   const [settings, setSettings] = useState({})
   const [uploadingSlot, setUploadingSlot] = useState(null)
   const [isAuthChecking, setIsAuthChecking] = useState(true)
+  const [cropImage, setCropImage] = useState(null)
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false)
   const navigate = useNavigate()
   const customEase = [0.16, 1, 0.3, 1]
 
@@ -107,38 +111,37 @@ export default function Admin() {
     setIsModalOpen(true)
   }
 
-  const handleImageUpdate = async (slot, e) => {
+  const handleImageUpdate = (slot, e) => {
     const file = e.target.files[0]
     if (!file) return
 
-    setUploadingSlot(slot)
+    const reader = new FileReader()
+    reader.onload = () => {
+      setCropImage(reader.result)
+      setUploadingSlot(slot)
+      setIsCropModalOpen(true)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleCropSave = async (blob) => {
+    if (!uploadingSlot) return
+    setIsCropModalOpen(false)
+    setUploadingSlot(uploadingSlot) // Keep slot active for loading state in UI
+
     try {
-      const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
-      if (!apiKey || apiKey === 'YOUR_IMGBB_API_KEY_HERE') {
-        throw new Error('Database Error: VITE_IMGBB_API_KEY missing in .env');
-      }
-
-      const bbData = new FormData();
-      bbData.append('image', file);
-
-      const resp = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: 'POST',
-        body: bbData,
-      });
+      const path = `settings/${uploadingSlot}_${Date.now()}.jpg`
+      const imageUrl = await uploadFile(blob, path)
       
-      const data = await resp.json()
-      if (!data.success) throw new Error(data.error?.message || 'Upload failed')
-
-      const imageUrl = data.data.url
-      await updateSetting(slot, imageUrl)
-      
-      setSettings(prev => ({ ...prev, [slot]: imageUrl }))
-      window.alert('Global assets updated successfully!')
+      await updateSetting(uploadingSlot, imageUrl)
+      setSettings(prev => ({ ...prev, [uploadingSlot]: imageUrl }))
+      // window.alert('Global assets updated successfully!')
     } catch (err) {
       console.error(err)
       window.alert('Failed to update image: ' + err.message)
     } finally {
       setUploadingSlot(null)
+      setCropImage(null)
     }
   }
   // Prevent visual flickers or "Back Button" leaks by showing nothing until auth is confirmed
@@ -230,6 +233,13 @@ export default function Admin() {
         onClose={() => { setIsModalOpen(false); setEditProjectData(null); }} 
         onSuccess={handleProjectSuccess} 
         initialData={editProjectData}
+      />
+
+      <ImageCropModal 
+        isOpen={isCropModalOpen}
+        image={cropImage}
+        onCancel={() => { setIsCropModalOpen(false); setUploadingSlot(null); setCropImage(null); }}
+        onCropComplete={handleCropSave}
       />
 
       <aside className="w-20 md:w-64 border-r border-white/5 flex flex-col bg-background z-20">

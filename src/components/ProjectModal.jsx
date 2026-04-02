@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createProject, updateProject } from '../firebase/services/projectService';
+import { uploadFile } from '../firebase/services/storageService';
+import ImageCropModal from './ImageCropModal';
+import { compressImage } from '../utils/cropImage';
 
 export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }) {
   const [formData, setFormData] = useState({ title: '', description: '', splineUrl: '' });
@@ -12,6 +15,9 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
   const [existingImages, setExistingImages] = useState([]);
 
   const [status, setStatus] = useState({ state: 'idle', message: '' });
+  const [cropImage, setCropImage] = useState(null);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [croppedBlob, setCroppedBlob] = useState(null);
 
   useEffect(() => {
     if (initialData && isOpen) {
@@ -52,86 +58,63 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        setStatus({ state: 'error', message: 'Image must be less than 10MB due to ImgBB limits.' });
-        return;
-      }
-      setStatus({ state: 'idle', message: '' });
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCropImage(reader.result);
+        setIsCropModalOpen(true);
+      };
+      reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (blob) => {
+    setCroppedBlob(blob);
+    setImagePreview(URL.createObjectURL(blob));
+    setIsCropModalOpen(false);
+    setCropImage(null);
   };
 
   const handleAdditionalFilesChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 4) {
-      setStatus({ state: 'error', message: 'Maximum 4 additional images allowed.' });
-      return;
-    }
-    for (let f of files) {
-      if (f.size > 10 * 1024 * 1024) {
-         setStatus({ state: 'error', message: 'All images must be less than 10MB.' });
-         return;
-      }
-    }
     setAdditionalFiles(files);
     setAdditionalPreviews(files.map(f => URL.createObjectURL(f)));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.description || (!imageFile && !imagePreview)) {
-      setStatus({ state: 'error', message: 'Title, details, and a featured image are required.' });
-      return;
-    }
-
-    setStatus({ state: 'uploading', message: 'Uploading to Digital Warehouse (ImgBB)...' });
+    setStatus({ state: 'uploading', message: 'Optimizing and syncing assets...' });
 
     try {
-      const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
-      if (!apiKey || apiKey === 'YOUR_IMGBB_API_KEY_HERE') {
-        throw new Error('Database Error: VITE_IMGBB_API_KEY missing in .env');
+      const timestamp = Date.now();
+      const slug = formData.title.replace(/\s+/g, '-').toLowerCase();
+
+      // 1. Prepare Featured Image Promise
+      let featuredPromise = Promise.resolve(imagePreview);
+      if (croppedBlob) {
+        const path = `projects/${slug}_featured_${timestamp}.jpg`;
+        featuredPromise = uploadFile(croppedBlob, path);
       }
 
-      let featuredUrl = imagePreview; // Default to existing
-      if (imageFile) {
-        const bbData = new FormData();
-        bbData.append('image', imageFile);
+      // 2. Prepare Additional Image Promises with compression
+      const additionalUploadPromises = additionalFiles.map(async (file, index) => {
+        const compressed = await compressImage(file, 0.8, 1600);
+        const path = `projects/${slug}_extra_${timestamp}_${index}.jpg`;
+        return uploadFile(compressed, path);
+      });
 
-        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-          method: 'POST',
-          body: bbData,
-        });
-        const data = await resp.json();
+      // 3. Execute all uploads in parallel
+      const [featuredUrl, ...additionalUrls] = await Promise.all([
+        featuredPromise,
+        ...additionalUploadPromises
+      ]);
 
-        if (!data.success) {
-           throw new Error(data.error?.message || 'Failed to upload featured image to ImgBB');
-        }
-        featuredUrl = data.data.url;
-      }
-
-      // Upload additional images
-      const additionalUrls = [];
-      if (additionalFiles.length > 0) {
-        setStatus({ state: 'uploading', message: 'Uploading additional images...' });
-        for (const file of additionalFiles) {
-          const bData = new FormData();
-          bData.append('image', file);
-          const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-            method: 'POST', body: bData
-          });
-          const d = await res.json();
-          if (!d.success) throw new Error(d.error?.message || 'Failed to upload additional image');
-          additionalUrls.push(d.data.url);
-        }
-      }
-
-      setStatus({ state: 'uploading', message: 'Saving project to Archive...' });
+      setStatus({ state: 'uploading', message: 'Finalizing database entry...' });
       
       let finalImages = [featuredUrl];
-      if (additionalFiles.length > 0) {
+      if (additionalUrls.length > 0) {
         finalImages = [...finalImages, ...additionalUrls];
       } else if (existingImages.length > 1) {
+        // Carry over existing images if no new ones selected
         finalImages = [...finalImages, ...existingImages.slice(1)];
       }
 
@@ -184,6 +167,13 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[600px] bg-card-bg border border-white/5 p-8 md:p-12 rounded-[32px] shadow-[0_30px_100px_rgba(0,0,0,0.8)] z-[101] max-h-[90vh] overflow-y-auto"
           >
+            <ImageCropModal 
+              isOpen={isCropModalOpen}
+              image={cropImage}
+              onCancel={() => { setIsCropModalOpen(false); setCropImage(null); }}
+              onCropComplete={handleCropComplete}
+            />
+
             <div className="flex justify-between items-center mb-8">
               <div>
                 <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-2 block">Database Entry</span>

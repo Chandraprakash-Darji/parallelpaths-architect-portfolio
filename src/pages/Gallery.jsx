@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { fetchProjects } from '../firebase/services/projectService'
+import { CardStack } from '../components/ui/CardStack'
 
 export default function Gallery() {
   const customEase = [0.16, 1, 0.3, 1]
@@ -56,42 +57,25 @@ export default function Gallery() {
         </motion.p>
       </header>
 
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-        {projects.map((project, i) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: i * 0.08, ease: customEase }}
-          >
-            <Link
-              to={`/gallery/${project.id}`}
-              className="gallery-item relative aspect-[3/4] overflow-hidden rounded-xl bg-card-bg group cursor-pointer block"
-              aria-label={`View details for ${project.title}`}
-            >
-              <img
-                className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
-                src={project.images?.[0] || project.image}
-                alt={`Architectural visualization of ${project.title}`}
-                loading="lazy"
-                decoding="async"
-              />
-              <div className="gallery-overlay absolute inset-0 bg-background/60 opacity-0 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
-                <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <span className="font-label text-[8px] tracking-[0.2em] uppercase text-accent mb-2 block">
-                    {project.category || 'Architecture'}
-                  </span>
-                  <h3 className="font-headline font-bold text-xl md:text-2xl text-primary-text flex justify-between items-center">
-                    {project.title}
-                    <span className="material-symbols-outlined text-accent text-xl" aria-hidden="true">arrow_outward</span>
-                  </h3>
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
+      {/* Gallery Card Stack */}
+      <div className="w-full py-12">
+        <CardStack 
+          items={projects.map(p => ({
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            category: p.category,
+            imageSrc: p.images?.[0] || p.image,
+            href: `/gallery/${p.id}`,
+          }))}
+          initialIndex={0}
+          autoAdvance
+          intervalMs={4000}
+          pauseOnHover
+          showDots
+          cardWidth={window.innerWidth < 768 ? 320 : 600}
+          cardHeight={window.innerWidth < 768 ? 480 : 400}
+        />
       </div>
 
       {/* View Archive Button */}
