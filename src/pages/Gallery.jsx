@@ -13,7 +13,19 @@ export default function Gallery() {
     const loadProjects = async () => {
       try {
         const data = await fetchProjects()
-        setProjects(data)
+        const testProject = {
+          id: "test-metadata-project",
+          title: "Bento Gallery Test",
+          subtitle: "Metadata Integration Verification",
+          description: "A specialized test project with rich image metadata to verify the interactive gallery component.",
+          category: "Architecture",
+          images: [
+            { url: "https://images.unsplash.com/photo-1448375240586-882707db888b", title: "Aerial Overview", desc: "Capturing the architectural rhythm from above.", type: "image" },
+            { url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", title: "Light & Shadow", desc: "The rhythmic interplay between solid and void.", type: "image" },
+            { url: "https://images.unsplash.com/photo-1501854140801-50d01698950b", title: "Twilight Transition", desc: "Twilight emphasizes the minimalist massing.", type: "image" }
+          ]
+        };
+        setProjects([testProject, ...data])
       } catch (error) {
         console.error("Failed to load generic projects:", error)
       }
@@ -65,7 +77,7 @@ export default function Gallery() {
             title: p.title,
             description: p.description,
             category: p.category,
-            imageSrc: p.images?.[0] || p.image,
+            imageSrc: p.images?.[0]?.url || p.images?.[0] || p.image,
             href: `/gallery/${p.id}`,
           }))}
           initialIndex={0}

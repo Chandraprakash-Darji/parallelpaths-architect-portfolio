@@ -3,6 +3,16 @@ import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { getProjectById } from '../firebase/services/projectService'
+import InteractiveBentoGallery from '../components/blocks/interactive-bento-gallery'
+
+const GALLERY_SPANS = [
+  "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
+  "md:col-span-2 md:row-span-2 col-span-1 sm:col-span-2 sm:row-span-2",
+  "md:col-span-1 md:row-span-3 sm:col-span-2 sm:row-span-2",
+  "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2",
+  "md:col-span-1 md:row-span-3 sm:col-span-1 sm:row-span-2",
+  "md:col-span-2 md:row-span-2 sm:col-span-1 sm:row-span-2",
+];
 
 export default function ProjectDetails() {
   const { id } = useParams()
@@ -134,32 +144,25 @@ export default function ProjectDetails() {
 
       {/* Image Gallery Bento Grid */}
       {project.images && project.images.length > 1 && (
-      <section className="py-24 px-6 md:px-16 bg-section-tone">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-            {project.images[1] && (
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: customEase }} className="md:col-span-5 h-[600px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[1]} alt="Architectural detail" loading="lazy" />
-            </motion.div>
-            )}
-            {project.images[2] && (
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1, ease: customEase }} className="md:col-span-7 h-[280px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[2]} alt="Tectonic texture study" loading="lazy" />
-            </motion.div>
-            )}
-            {project.images[3] && (
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2, ease: customEase }} className="md:col-span-4 h-[280px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[3]} alt="Interior living space" loading="lazy" />
-            </motion.div>
-            )}
-            {project.images[4] && (
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3, ease: customEase }} className="md:col-span-3 h-[280px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[4]} alt="Detail of sculptural staircase" loading="lazy" />
-            </motion.div>
-            )}
+        <section className="py-32 px-6 md:px-16 bg-section-tone overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <InteractiveBentoGallery
+              title="Project Visuals"
+              description="Explore the intricate details and perspectives of this architectural study."
+              mediaItems={project.images.slice(1).map((img, i) => {
+                const isObject = typeof img === 'object' && img !== null;
+                return {
+                  id: i + 1,
+                  type: isObject ? (img.type || "image") : "image",
+                  title: (isObject && img.title) ? img.title : `${project.title} - View ${i + 1}`,
+                  desc: (isObject && img.desc) ? img.desc : (project.subtitle || "Architectural Perspective"),
+                  url: isObject ? img.url : img,
+                  span: GALLERY_SPANS[i % GALLERY_SPANS.length]
+                };
+              })}
+            />
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* Description Section */}

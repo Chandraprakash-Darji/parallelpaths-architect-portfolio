@@ -68,12 +68,12 @@ export default async function getCroppedImg(imageSrc, pixelCrop, rotation = 0, q
   // As a Blob with compression
   return new Promise((resolve, reject) => {
     canvas.toBlob(
-      (file) => {
-        if (!file) {
-          reject(new Error('Canvas is empty'));
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Canvas image creation failed - Blob is null'));
           return;
         }
-        resolve(file);
+        resolve(blob);
       },
       'image/jpeg',
       quality
@@ -106,9 +106,15 @@ export async function compressImage(file, quality = 0.8, maxWidth = 1920) {
   canvas.height = height;
   ctx.drawImage(image, 0, 0, width, height);
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     canvas.toBlob(
-      (blob) => resolve(blob || file),
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Compression failed - Blob is null'));
+          return;
+        }
+        resolve(blob);
+      },
       'image/jpeg',
       quality
     );

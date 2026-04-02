@@ -59,7 +59,7 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
           className="relative w-full max-w-4xl bg-card-bg border border-white/10 rounded-[32px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.9)] flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="p-6 md:p-8 border-b border-white/5 flex justify-between items-center bg-card-bg/50 backdrop-blur-md">
+          <div className="flex-shrink-0 p-6 md:p-8 border-b border-white/5 flex justify-between items-center bg-card-bg/50 backdrop-blur-md">
             <div>
               <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-1 block italic">Refining Perspective</span>
               <h2 className="font-headline font-bold text-xl uppercase tracking-wider text-primary-text">Crop Image</h2>
@@ -72,67 +72,74 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
             </button>
           </div>
 
-          {/* Cropper Container */}
-          <div className="relative flex-1 bg-[#0a0a0a] min-h-[400px]">
-            <Cropper
-              image={image}
-              crop={crop}
-              zoom={zoom}
-              aspect={aspect}
-              onCropChange={onCropChange}
-              onCropComplete={onCropCompleteInternal}
-              onZoomChange={onZoomChange}
-              classes={{
-                containerClassName: "bg-[#0a0a0a]",
-                mediaClassName: "opacity-90"
-              }}
-            />
-          </div>
-
-          {/* Controls */}
-          <div className="p-6 md:p-8 border-t border-white/5 space-y-8 bg-card-bg/50 backdrop-blur-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
-              {/* Aspect Ratios */}
-              <div className="space-y-4">
-                <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 block ml-1">Aspect Ratio</label>
-                <div className="flex gap-2">
-                  {ASPECT_RATIOS.map((arr) => (
-                    <button
-                      key={arr.value}
-                      onClick={() => setAspect(arr.value)}
-                      className={`flex-1 py-3 px-2 rounded-xl text-[9px] font-headline font-bold uppercase tracking-widest transition-all ${
-                        aspect === arr.value 
-                        ? 'bg-accent text-on-accent shadow-lg shadow-accent/20' 
-                        : 'bg-white/5 text-primary-text/40 hover:bg-white/10 hover:text-primary-text'
-                      }`}
-                    >
-                      {arr.label.split(' ')[0]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Zoom Slider */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center px-1">
-                  <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 block">Zoom Detail</label>
-                  <span className="font-body text-[10px] text-accent font-bold">{(zoom * 100).toFixed(0)}%</span>
-                </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  value={zoom}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                  className="w-full h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-accent hover:accent-accent/80 transition-all"
-                />
-              </div>
+          {/* Main Content Area (Scrollable) */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+            {/* Cropper Container - Fixed Height */}
+            <div className="relative h-[300px] md:h-[400px] flex-shrink-0 bg-[#0a0a0a] border-b border-white/5">
+              <Cropper
+                image={image}
+                crop={crop}
+                zoom={zoom}
+                aspect={aspect}
+                onCropChange={onCropChange}
+                onCropComplete={onCropCompleteInternal}
+                onZoomChange={onZoomChange}
+                classes={{
+                  containerClassName: "bg-[#0a0a0a]",
+                  mediaClassName: "opacity-90"
+                }}
+              />
             </div>
 
-            {/* Actions */}
+            {/* Controls Section */}
+            <div className="p-6 md:p-8 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
+                {/* Aspect Ratios */}
+                <div className="space-y-4">
+                  <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 block ml-1">Aspect Ratio</label>
+                  <div className="flex gap-2">
+                    {ASPECT_RATIOS.map((arr) => (
+                      <button
+                        key={arr.value}
+                        type="button"
+                        onClick={() => setAspect(arr.value)}
+                        className={`flex-1 py-3 px-2 rounded-xl text-[9px] font-headline font-bold uppercase tracking-widest transition-all ${
+                          aspect === arr.value 
+                          ? 'bg-accent text-on-accent shadow-lg shadow-accent/20' 
+                          : 'bg-white/5 text-primary-text/40 hover:bg-white/10 hover:text-primary-text'
+                        }`}
+                      >
+                        {arr.label.split(' ')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Zoom Slider */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 block">Zoom Detail</label>
+                    <span className="font-body text-[10px] text-accent font-bold">{(zoom * 100).toFixed(0)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    value={zoom}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className="w-full h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-accent hover:accent-accent/80 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer - Fixed Bottom */}
+          <div className="flex-shrink-0 p-6 md:p-8 border-t border-white/5 bg-card-bg/50 backdrop-blur-md">
             <div className="flex justify-end gap-6 items-center">
               <button
+                type="button"
                 onClick={onCancel}
                 disabled={isProcessing}
                 className="font-headline text-[11px] font-bold uppercase tracking-widest text-primary-text/40 hover:text-primary-text transition-colors disabled:opacity-30"
@@ -140,6 +147,7 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
                 Discard
               </button>
               <button
+                type="button"
                 onClick={handleApplyCrop}
                 disabled={isProcessing}
                 className="bg-accent text-on-accent px-10 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl shadow-accent/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50 disabled:hover:scale-100"
