@@ -33,6 +33,7 @@ export function CardStack({
   showDots = true,
   className,
   onChangeIndex,
+  renderCard,
 }) {
   const reduceMotion = useReducedMotion();
   const len = items.length;
@@ -136,7 +137,7 @@ export function CardStack({
                     rotateZ,
                     rotateX,
                     scale,
-                    transform: `translateZ(${z}px)`,
+                    z,
                   }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{
@@ -154,7 +155,11 @@ export function CardStack({
                     else if (info.offset.x < -threshold) next();
                   }}
                 >
-                  <ObsidianCard item={item} isActive={isActive} />
+                  {renderCard ? (
+                    renderCard(item, { active: isActive })
+                  ) : (
+                    <ObsidianCard item={item} isActive={isActive} />
+                  )}
                 </motion.div>
               );
             })}

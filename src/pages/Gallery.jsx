@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { fetchProjects } from '../firebase/services/projectService'
@@ -8,30 +8,27 @@ import { CardStack } from '../components/ui/CardStack'
 export default function Gallery() {
   const customEase = [0.16, 1, 0.3, 1]
   const [projects, setProjects] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const data = await fetchProjects()
-        const testProject = {
-          id: "test-metadata-project",
-          title: "Bento Gallery Test",
-          subtitle: "Metadata Integration Verification",
-          description: "A specialized test project with rich image metadata to verify the interactive gallery component.",
-          category: "Architecture",
-          images: [
-            { url: "https://images.unsplash.com/photo-1448375240586-882707db888b", title: "Aerial Overview", desc: "Capturing the architectural rhythm from above.", type: "image" },
-            { url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e", title: "Light & Shadow", desc: "The rhythmic interplay between solid and void.", type: "image" },
-            { url: "https://images.unsplash.com/photo-1501854140801-50d01698950b", title: "Twilight Transition", desc: "Twilight emphasizes the minimalist massing.", type: "image" }
-          ]
-        };
-        setProjects([testProject, ...data])
+        setProjects(data)
       } catch (error) {
         console.error("Failed to load generic projects:", error)
       }
     }
     loadProjects()
   }, [])
+
+  const mappedProjects = useMemo(() => projects.map((project) => ({
+    id: project.id,
+    title: project.title,
+    description: project.subtitle || project.philosophy?.slice(0, 90),
+    imageSrc: project.mainImage || project.images?.[0]?.url,
+    href: `/gallery/${project.id}`,
+  })), [projects]);
 
   return (
     <main className="pt-32 pb-20 px-6 md:px-12 max-w-[1920px] mx-auto">
@@ -70,23 +67,60 @@ export default function Gallery() {
       </header>
 
       {/* Gallery Card Stack */}
-      <div className="w-full py-12">
+      <div className="w-full max-w-6xl mx-auto py-12 px-4 overflow-visible">
         <CardStack 
-          items={projects.map(p => ({
-            id: p.id,
-            title: p.title,
-            description: p.description,
-            category: p.category,
-            imageSrc: p.images?.[0]?.url || p.images?.[0] || p.image,
-            href: `/gallery/${p.id}`,
-          }))}
-          initialIndex={0}
+          items={mappedProjects}
+          maxVisible={5}
+          cardWidth={380}
+          cardHeight={260}
+          overlap={0.6}
+          spreadDeg={60}
+          depthPx={180}
+          tiltXDeg={10}
+          activeScale={1.05}
+          inactiveScale={0.9}
+          renderCard={(item, { active }) => (
+            <div 
+              onClick={(e) => {
+                if (!active) return;
+                // Prevent navigation if it was a drag
+                if (e.movementX && Math.abs(e.movementX) > 5) return;
+                e.stopPropagation();
+                navigate(item.href);
+              }}
+              className={`relative h-full w-full rounded-2xl overflow-hidden group block transition-all duration-300 ${
+                active ? 'pointer-events-auto cursor-pointer hover:scale-[1.02] shadow-[0_0_25px_rgba(212,175,55,0.15)]' : 'pointer-events-none'
+              }`}
+            >
+              {/* Image */}
+              <img
+                src={item.imageSrc}
+                alt={item.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+              {/* Content */}
+              <div className="absolute bottom-0 p-5 w-full">
+                <h3 className="text-white text-lg font-semibold tracking-wide">
+                  {item.title}
+                </h3>
+                <p className="text-white/70 text-sm mt-1 line-clamp-2">
+                  {item.description}
+                </p>
+              </div>
+
+              {/* Gold Accent Border */}
+              <div className="absolute inset-0 rounded-2xl border border-[#D4AF37]/20 pointer-events-none" />
+            </div>
+          )}
           autoAdvance
-          intervalMs={4000}
+          intervalMs={3000}
           pauseOnHover
           showDots
-          cardWidth={window.innerWidth < 768 ? 320 : 600}
-          cardHeight={window.innerWidth < 768 ? 480 : 400}
         />
       </div>
 
