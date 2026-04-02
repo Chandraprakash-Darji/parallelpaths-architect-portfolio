@@ -33,9 +33,17 @@ function Navbar() {
   }
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-background/90 backdrop-blur-xl shadow-2xl' : 'bg-background/80 backdrop-blur-md'
-    } border-b border-white/5`}>
+    <motion.nav
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="fixed top-0 w-full z-50 transition-colors duration-500"
+      style={{
+        backgroundColor: scrolled ? 'rgba(13, 7, 4, 0.9)' : 'rgba(13, 7, 4, 0.4)',
+        backdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
+        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0)'
+      }}
+    >
       <div className="flex justify-between items-center w-full px-6 md:px-12 py-4 md:py-6 max-w-[1920px] mx-auto">
         <Link to="/" className="text-xl md:text-2xl font-bold tracking-[0.1em] text-primary-text font-headline" aria-label="Parallel Paths Home">
           PARALLEL PATHS
@@ -44,38 +52,45 @@ function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-12 font-headline tracking-[0.05em] uppercase text-sm font-medium">
           {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`transition-colors duration-300 ${
-                location.pathname === link.path
-                  ? 'text-accent border-b border-accent pb-1'
-                  : 'text-primary-text hover:text-accent'
-              }`}
-            >
-              {link.label}
-            </Link>
+            <motion.div key={link.path} whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+              <Link
+                to={link.path}
+                className={`transition-colors duration-300 ${
+                  location.pathname === link.path
+                    ? 'text-accent border-b border-accent pb-1'
+                    : 'text-primary-text hover:text-accent'
+                }`}
+              >
+                {link.label}
+              </Link>
+            </motion.div>
           ))}
         </div>
 
         <div className="hidden md:block">
-          <Link
-            to="/contact"
-            className="bg-primary-text text-background px-6 md:px-8 py-2 md:py-3 rounded-full font-headline text-xs md:text-sm font-bold uppercase tracking-wider hover:bg-accent transition-all duration-300 active:scale-95 shadow-lg inline-block"
+          <motion.div
+            whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(200, 169, 107, 0.4)" }}
+            whileTap={{ scale: 0.95 }}
           >
-            Get Started
-          </Link>
+            <Link
+              to="/contact"
+              className="bg-primary-text text-background px-6 md:px-8 py-2 md:py-3 rounded-full font-headline text-xs md:text-sm font-bold uppercase tracking-wider hover:bg-accent hover:text-on-accent transition-all duration-300 shadow-lg inline-block"
+            >
+              Get Started
+            </Link>
+          </motion.div>
         </div>
 
         {/* Mobile Hamburger */}
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           className="md:hidden flex items-center justify-center p-2 text-primary-text hover:text-accent transition-colors"
           onClick={toggleMobile}
           aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={mobileOpen}
         >
           <span className="material-symbols-outlined text-3xl">{mobileOpen ? 'close' : 'menu'}</span>
-        </button>
+        </motion.button>
       </div>
 
       <AnimatePresence>
@@ -133,7 +148,7 @@ function Navbar() {
             </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   )
 }
 

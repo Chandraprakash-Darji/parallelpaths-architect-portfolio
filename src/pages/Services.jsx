@@ -37,10 +37,10 @@ export default function Services() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-16 lg:gap-24 mb-32">
           {/* LEFT: Floating Architectural Model */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.8, x: -40 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: customEase }}
+            transition={{ duration: 1, ease: customEase }}
             className="w-full md:w-1/2 relative group"
           >
             <div className="absolute -inset-4 bg-accent/5 blur-3xl rounded-full opacity-50" />
@@ -68,9 +68,12 @@ export default function Services() {
             </h1>
             <div className="flex items-center gap-6 pt-4">
               <Link to="/gallery" className="flex items-center gap-4 group" aria-label="Explore our architectural portfolio">
-                <span className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-accent group-hover:border-accent transition-all duration-300">
+                <motion.span
+                  whileHover={{ scale: 1.1, backgroundColor: 'var(--color-accent)' }}
+                  className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center transition-all duration-300"
+                >
                   <span className="material-symbols-outlined text-primary-text group-hover:text-on-accent transition-colors" aria-hidden="true">arrow_forward</span>
-                </span>
+                </motion.span>
                 <span className="font-headline uppercase tracking-[0.3em] text-[10px] font-extrabold text-primary-text group-hover:text-accent transition-colors">View Projects</span>
               </Link>
             </div>
@@ -78,17 +81,37 @@ export default function Services() {
         </div>
 
         {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-20" aria-hidden="true" />
+        <motion.div
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, ease: customEase }}
+          className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-20 origin-left"
+          aria-hidden="true"
+        />
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 md:flex md:flex-row items-center justify-between gap-8 md:gap-4">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+          className="grid grid-cols-2 md:flex md:flex-row items-center justify-between gap-8 md:gap-4"
+        >
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1, ease: customEase }}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: customEase } }
+              }}
               className="flex flex-col items-center md:items-start text-center md:text-left"
             >
               <span className="text-3xl md:text-5xl lg:text-6xl font-headline font-extrabold text-primary-text tracking-tighter">
@@ -99,7 +122,7 @@ export default function Services() {
               </span>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
     </main>
   )

@@ -92,12 +92,18 @@ export default function Gallery() {
 
       {/* View Archive Button */}
       <div className="mt-24 flex flex-col items-center">
-        <button
-          className="px-12 py-4 rounded-full border border-accent/30 text-accent font-label text-[10px] tracking-[0.3em] uppercase hover:bg-accent hover:text-on-accent transition-all duration-500 active:scale-95 shadow-xl"
+        <motion.button
+          whileHover={{ 
+            scale: 1.05, 
+            boxShadow: "0 0 25px rgba(200, 169, 107, 0.4)",
+            borderColor: "var(--color-accent)"
+          }}
+          whileTap={{ scale: 0.95 }}
+          className="px-12 py-4 rounded-full border border-accent/30 text-accent font-label text-[10px] tracking-[0.3em] uppercase hover:bg-accent hover:text-on-accent transition-all duration-500 shadow-xl"
           aria-label="Load more projects from the archive"
         >
           View Archive
-        </button>
+        </motion.button>
       </div>
     </main>
   )

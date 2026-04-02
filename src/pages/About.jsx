@@ -37,10 +37,10 @@ export default function About() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-center">
           {/* LEFT: Portrait Image */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.9, x: -40 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: customEase }}
+            transition={{ duration: 1, ease: customEase }}
             className="relative group"
           >
             <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl transition-transform duration-700 hover:scale-[1.02]">
@@ -81,14 +81,20 @@ export default function About() {
             </div>
 
             {/* Signature */}
-            <div className="pt-8 border-t border-white/10 flex flex-col space-y-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="pt-8 border-t border-white/10 flex flex-col space-y-2"
+            >
               <span className="signature-font text-5xl text-accent opacity-90 select-none">
                 Elias Thorne
               </span>
               <span className="text-[0.65rem] uppercase tracking-[0.2em] text-primary-text/40 font-headline font-bold">
                 Principal Visionary &amp; Founder
               </span>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </main>
@@ -96,10 +102,10 @@ export default function About() {
       {/* SECTION 2: Light-themed Architect Section (Contrast Block) */}
       <section className="px-6 md:px-12 lg:px-24 py-12" style={{ backgroundColor: '#F5F2EA', color: '#171412' }}>
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: customEase }}
+          transition={{ duration: 1, ease: customEase }}
           className="max-w-7xl mx-auto grid grid-cols-12 gap-8 items-center"
         >
           <div className="col-span-12 lg:col-span-7 h-[400px] lg:h-[500px] overflow-hidden rounded-2xl shadow-xl" style={{ backgroundColor: '#1F1208' }}>
@@ -110,7 +116,13 @@ export default function About() {
               loading="lazy"
             />
           </div>
-          <div className="col-span-12 lg:col-span-5 flex flex-col space-y-6 lg:pl-12">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="col-span-12 lg:col-span-5 flex flex-col space-y-6 lg:pl-12"
+          >
             <h3 className="text-2xl lg:text-3xl font-bold tracking-tight font-headline" style={{ color: '#171412' }}>
               01. The Philosophy of Subtraction
             </h3>
@@ -118,17 +130,17 @@ export default function About() {
               Every line drawn is a choice to exclude the noise of the world. We build for the moments between the walls.
             </p>
             <div className="w-12 h-1" style={{ backgroundColor: '#C8A96B', opacity: 0.3 }} aria-hidden="true" />
-          </div>
+          </motion.div>
         </motion.div>
       </section>
 
       {/* SECTION 3: Dark Philosophy Strip (from about.html) */}
       <section className="px-8 md:px-12 lg:px-24 py-24 bg-section-tone">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: customEase }}
+          transition={{ duration: 1, ease: customEase }}
           className="max-w-7xl mx-auto grid grid-cols-12 gap-8 items-center"
         >
           <div className="col-span-12 lg:col-span-7 h-[500px] overflow-hidden rounded-2xl shadow-xl">
@@ -139,7 +151,13 @@ export default function About() {
               loading="lazy"
             />
           </div>
-          <div className="col-span-12 lg:col-span-5 flex flex-col space-y-6 lg:pl-12">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="col-span-12 lg:col-span-5 flex flex-col space-y-6 lg:pl-12"
+          >
             <h3 className="text-3xl font-bold tracking-tight text-primary-text font-headline uppercase italic">
               02. Tectonic Resilience
             </h3>
@@ -147,7 +165,7 @@ export default function About() {
               We design for longevity, ensuring that each intervention ages with grace and remains functionally relevant for generations.
             </p>
             <div className="w-12 h-1 bg-accent/30" aria-hidden="true" />
-          </div>
+          </motion.div>
         </motion.div>
       </section>
     </>

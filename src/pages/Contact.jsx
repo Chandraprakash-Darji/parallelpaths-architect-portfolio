@@ -162,10 +162,16 @@ export default function Contact() {
               ></textarea>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ 
+                scale: 1.02, 
+                boxShadow: "0 0 20px rgba(200, 169, 107, 0.4)",
+                backgroundColor: "var(--color-accent)" 
+              }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={status.state === 'submitting'}
-              className="bg-accent text-on-accent font-headline font-bold uppercase tracking-[0.2em] py-5 rounded-full hover:scale-[1.02] active:scale-95 transition-all shadow-xl mt-4 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-3"
+              className="bg-accent text-on-accent font-headline font-bold uppercase tracking-[0.2em] py-5 rounded-full transition-all shadow-xl mt-4 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-3"
               aria-label="Send your enquiry"
             >
               {status.state === 'submitting' ? (
@@ -174,7 +180,7 @@ export default function Contact() {
                   SENDING...
                 </>
               ) : 'Send Enquiry'}
-            </button>
+            </motion.button>
           </motion.form>
         </div>
       </div>
