@@ -158,7 +158,7 @@ export default function Admin() {
     }
   };
   // Prevent visual flickers or "Back Button" leaks by showing nothing until auth is confirmed
-  const bypassLoginForTesting = true; // Temporary bypass for testing
+  const bypassLoginForTesting = false; // Security: Ensure request.auth is populated in Firestore
   if (isAuthChecking) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

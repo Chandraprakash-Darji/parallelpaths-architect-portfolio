@@ -3,9 +3,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // --- PROJECTS COLLECTION ---
-    match /projects/{document=**} {
+    match /projects/{projectId} {
       allow read: if true;
-      allow write: if true;
+      allow create: if true; 
+      allow update, delete: if request.auth != null;
     }
 
     // --- SETTINGS COLLECTION ---
