@@ -182,7 +182,7 @@ export default function Admin() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: customEase }}
-          className="w-full max-w-md bg-card-bg/40 backdrop-blur-2xl border border-white/5 p-8 md:p-12 rounded-3xl shadow-2xl relative"
+          className="w-[90%] max-w-md bg-card-bg/40 backdrop-blur-2xl border border-white/5 p-6 md:p-12 rounded-3xl shadow-2xl relative"
         >
           <div className="flex flex-col items-center mb-10 text-center">
             <span className="font-label text-[10px] tracking-[0.4em] uppercase text-accent mb-4 block">Secure Portal</span>
@@ -292,28 +292,29 @@ export default function Admin() {
       </aside>
 
       <section className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <header className="h-20 border-b border-white/5 flex flex-row items-center justify-between px-8 md:px-12 sticky top-0 bg-background/80 backdrop-blur-md z-10">
+        <header className="h-20 border-b border-white/5 flex flex-row items-center justify-between px-4 md:px-12 sticky top-0 bg-background/80 backdrop-blur-md z-10">
           <h2 className="font-headline text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-primary-text/60">
             {currentTab === 'projects' ? 'Portfolio Management' : 
              currentTab === 'content' ? 'Global Page Content' : 'Inquiries Management'}
           </h2>
         </header>
 
-        <div className="p-8 md:p-12 lg:p-16 max-w-7xl">
+        <div className="p-4 md:p-12 lg:p-16 max-w-7xl">
           {currentTab === 'projects' && (
             <>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
                 <div>
                   <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-4 block">Dashboard</span>
-                  <h1 className="font-headline font-extrabold text-5xl md:text-6xl tracking-tighter text-primary-text uppercase">Project <span className="italic font-light">Archive</span></h1>
+                  <h1 className="font-headline font-extrabold text-3xl md:text-6xl tracking-tighter text-primary-text uppercase">Project <span className="italic font-light">Archive</span></h1>
                 </div>
-                <button onClick={() => setIsModalOpen(true)} className="bg-accent text-on-accent px-8 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+                <button onClick={() => setIsModalOpen(true)} className="w-full md:w-auto bg-accent text-on-accent px-8 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-sm">add</span> Add New Piece
                 </button>
               </div>
 
           <div className="bg-card-bg/30 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-            <table className="w-full text-left font-body">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left font-body min-w-[800px] md:min-w-0">
               <thead className="bg-white/5">
                 <tr>
                   <th className="p-6 font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40">Work Title</th>
@@ -361,6 +362,7 @@ export default function Admin() {
               </tbody>
             </table>
           </div>
+        </div>
           </>
         )}
 
@@ -369,11 +371,11 @@ export default function Admin() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
               <div>
                 <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-4 block">Dashboard</span>
-                <h1 className="font-headline font-extrabold text-5xl md:text-6xl tracking-tighter text-primary-text uppercase">Page <span className="italic font-light">Content</span></h1>
+                <h1 className="font-headline font-extrabold text-3xl md:text-6xl tracking-tighter text-primary-text uppercase">Page <span className="italic font-light">Content</span></h1>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Home Page Section */}
               <div className="bg-card-bg/30 border border-white/5 p-8 rounded-3xl space-y-8">
                 <div className="flex items-center gap-4">
@@ -452,12 +454,13 @@ export default function Admin() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
               <div>
                 <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-4 block">Dashboard</span>
-                <h1 className="font-headline font-extrabold text-5xl md:text-6xl tracking-tighter text-primary-text uppercase">Direct <span className="italic font-light">Inquiries</span></h1>
+                <h1 className="font-headline font-extrabold text-3xl md:text-6xl tracking-tighter text-primary-text uppercase">Direct <span className="italic font-light">Inquiries</span></h1>
               </div>
             </div>
 
           <div className="bg-card-bg/30 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-            <table className="w-full text-left font-body">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left font-body min-w-[800px] md:min-w-0">
               <thead className="bg-white/5">
                 <tr>
                   <th className="p-6 font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40">Sender</th>
@@ -487,6 +490,7 @@ export default function Admin() {
               </tbody>
             </table>
           </div>
+        </div>
           </>
         )}
         </div>

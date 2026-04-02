@@ -2,6 +2,14 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { submitContactForm } from '../firebase/services/contactService'
+import Dropdown from '../components/ui/dropdown-01'
+
+const projectOptions = [
+  { value: 'Residential', label: 'Residential', description: 'Private homes & villas' },
+  { value: 'Commercial', label: 'Commercial', description: 'Offices & retail spaces' },
+  { value: 'Cultural', label: 'Cultural / Exhibition', description: 'Museums & public works' },
+  { value: 'Interior', label: 'Interior Design', description: 'Bespoke interiors' },
+]
 
 const contactInfo = [
   { icon: 'location_on', label: 'Studio', detail: '422 Obsidian Way, High Desert, AZ 86336' },
@@ -128,25 +136,14 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 relative">
-              <label htmlFor="project" className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 ml-1">Project Type</label>
-              <div className="relative w-full">
-                <select
-                  id="project"
-                  value={formData.project}
-                  onChange={handleChange}
-                  className="w-full bg-background/50 border border-white/10 rounded-lg p-4 pr-12 font-body text-primary-text focus:border-accent focus:outline-none transition-colors appearance-none"
-                  aria-label="Select your project category"
-                  disabled={status.state === 'submitting'}
-                >
-                  <option value="Residential" className="bg-background">Residential</option>
-                  <option value="Commercial" className="bg-background">Commercial</option>
-                  <option value="Cultural" className="bg-background">Cultural / Exhibition</option>
-                  <option value="Interior" className="bg-background">Interior Design</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary-text/40 pointer-events-none" aria-hidden="true">expand_more</span>
-              </div>
-            </div>
+            <Dropdown
+              id="project"
+              label="Project Type"
+              options={projectOptions}
+              value={formData.project}
+              onChange={(value) => setFormData(prev => ({ ...prev, project: value }))}
+              disabled={status.state === 'submitting'}
+            />
 
             <div className="flex flex-col gap-2">
               <label htmlFor="message" className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 ml-1">Message</label>

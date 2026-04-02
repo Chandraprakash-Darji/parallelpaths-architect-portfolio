@@ -28,8 +28,8 @@ export default function About() {
   return (
     <>
       <Helmet>
-        <title>About | Parallel Paths Architecture</title>
-        <meta name="description" content="Meet Elias Thorne, the visionary behind Parallel Paths. Discover our philosophy of subtraction and essentialist architectural design." />
+        <title>About | Parag Jadhav — Parallel Paths</title>
+        <meta name="description" content="Meet Parag Jadhav, founder of Parallel Paths. A digital creator and visionary building aesthetic, cinematic experiences through design, storytelling, and modern visual culture." />
       </Helmet>
 
       {/* SECTION 1: Dark-themed About (Primary) */}
@@ -45,7 +45,7 @@ export default function About() {
           >
             <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl transition-transform duration-700 hover:scale-[1.02]">
               <img
-                alt="Portrait of Elias Thorne, Principal Architect of Parallel Paths, in a modernist concrete studio"
+                alt="Portrait of Parag Jadhav, founder and principal architect of Parallel Paths"
                 className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
                 src={images.portrait}
                 decoding="async"
@@ -64,7 +64,7 @@ export default function About() {
           >
             <div className="space-y-6">
               <span className="text-[0.75rem] uppercase tracking-[0.3em] text-accent font-bold block font-headline">
-                THE ARCHITECT
+                _______________
               </span>
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-primary-text leading-[1.1] font-headline uppercase">
                 The <span className="italic text-accent">Architect</span>
@@ -73,10 +73,10 @@ export default function About() {
 
             <div className="space-y-8 max-w-xl">
               <p className="text-lg md:text-xl leading-relaxed text-primary-text/70 font-light font-body">
-                Founded on the belief that space should breathe, Elias Thorne has spent two decades carving stillness into the urban landscape. His approach is reductive yet profound—stripping away the superfluous to reveal the skeletal beauty of light, shadow, and raw materiality.
+                Parag Jadhav is the founder of Parallel Paths, an architectural practice rooted in clarity, restraint, and purposeful design. His work focuses on creating spaces that feel grounded, immersive, and deeply connected to their surroundings.
               </p>
               <p className="text-lg md:text-xl leading-relaxed text-primary-text/70 font-light font-body">
-                To Thorne, a building is not an object, but an experience. It is the silent dialogue between the permanence of stone and the fleeting dance of the meridian sun. His vision remains unwavering: to create monoliths that stand as quiet testaments to the power of essentialist design.
+                To Parag, architecture is more than structure — it is experience. Every line, material, and spatial decision is crafted to evoke emotion, create harmony, and shape how people interact with their environment. His vision is to design spaces that feel timeless, intentional, and deeply human.
               </p>
             </div>
 
@@ -89,10 +89,10 @@ export default function About() {
               className="pt-8 border-t border-white/10 flex flex-col space-y-2"
             >
               <span className="signature-font text-5xl text-accent opacity-90 select-none">
-                Elias Thorne
+                Parag Jadhav
               </span>
               <span className="text-[0.65rem] uppercase tracking-[0.2em] text-primary-text/40 font-headline font-bold">
-                Principal Visionary &amp; Founder
+                Founder &amp; Principal Architect
               </span>
             </motion.div>
           </motion.div>
@@ -124,10 +124,10 @@ export default function About() {
             className="col-span-12 lg:col-span-5 flex flex-col space-y-6 lg:pl-12"
           >
             <h3 className="text-2xl lg:text-3xl font-bold tracking-tight font-headline" style={{ color: '#171412' }}>
-              01. The Philosophy of Subtraction
+              01. The Philosophy of Space
             </h3>
             <p className="max-w-md font-body text-lg leading-relaxed" style={{ color: '#8B7D6B' }}>
-              Every line drawn is a choice to exclude the noise of the world. We build for the moments between the walls.
+              Architecture begins with understanding space — not as volume, but as experience. Every project is an exploration of balance between openness and enclosure, light and shadow, form and function.
             </p>
             <div className="w-12 h-1" style={{ backgroundColor: '#C8A96B', opacity: 0.3 }} aria-hidden="true" />
           </motion.div>
@@ -159,10 +159,10 @@ export default function About() {
             className="col-span-12 lg:col-span-5 flex flex-col space-y-6 lg:pl-12"
           >
             <h3 className="text-3xl font-bold tracking-tight text-primary-text font-headline uppercase italic">
-              02. Tectonic Resilience
+              02. Material & Presence
             </h3>
             <p className="text-primary-text/60 max-w-md font-body text-lg leading-relaxed">
-              We design for longevity, ensuring that each intervention ages with grace and remains functionally relevant for generations.
+              Material is not just a choice — it defines character. Each element is selected to age with grace, ensuring that the structure remains relevant, resilient, and timeless.
             </p>
             <div className="w-12 h-1 bg-accent/30" aria-hidden="true" />
           </motion.div>

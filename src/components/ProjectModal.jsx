@@ -322,7 +322,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[600px] bg-card-bg border border-white/5 p-8 md:p-12 rounded-[32px] shadow-[0_30px_100px_rgba(0,0,0,0.8)] z-[101] max-h-[90vh] overflow-y-auto"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] md:w-[90vw] max-w-lg md:max-w-2xl bg-card-bg border border-white/5 p-6 md:p-12 rounded-[32px] shadow-[0_30px_100px_rgba(0,0,0,0.8)] z-[101] max-h-[90vh] overflow-y-auto"
           >
             <ImageCropModal 
               isOpen={isCropModalOpen}
@@ -391,7 +391,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 ml-1">Location</label>
                   <input
@@ -507,7 +507,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                   {additionalPreviews.length > 0 ? (
                     <div className="w-full space-y-6 relative z-10">
                       {additionalPreviews.map((src, i) => (
-                        <div key={i} className="flex gap-6 items-start bg-background/40 p-4 rounded-2xl border border-white/5 group/item relative">
+                        <div key={i} className="flex flex-col sm:flex-row gap-6 items-start bg-background/40 p-4 rounded-2xl border border-white/5 group/item relative">
                           <div className="relative w-24 h-24 shrink-0 rounded-xl border border-white/10 overflow-hidden group/thumb cursor-pointer">
                             <img src={src} className="w-full h-full object-cover" alt={`Preview ${i+1}`} />
                             <div className="absolute inset-0 bg-background/60 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
@@ -530,7 +530,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                             />
                           </div>
                           
-                          <div className="flex-1 space-y-3 relative z-30">
+                          <div className="w-full flex-1 space-y-3 relative z-30">
                             <input 
                               type="text"
                               placeholder="Image Title (e.g. South Elevation)"
@@ -555,7 +555,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                         const url = typeof img === 'string' ? img : img.url;
                         const meta = typeof img === 'string' ? { title: '', desc: '' } : img;
                         return (
-                          <div key={i} className="flex gap-6 items-start bg-background/40 p-4 rounded-2xl border border-white/5 opacity-80 group/item relative">
+                          <div key={i} className="flex flex-col sm:flex-row gap-6 items-start bg-background/40 p-4 rounded-2xl border border-white/5 opacity-80 group/item relative">
                             <div className="relative w-24 h-24 shrink-0 rounded-xl border border-white/10 overflow-hidden grayscale cursor-pointer group/thumb">
                               <img src={url} className="w-full h-full object-cover" alt="existing" />
                               <input 
@@ -593,19 +593,19 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                 </div>
               </div>
 
-              <div className="pt-8 border-t border-white/5 flex justify-end gap-6 items-center">
+              <div className="pt-8 border-t border-white/5 flex flex-col-reverse sm:flex-row justify-end gap-4 sm:gap-6 items-center">
                 <button
                   type="button"
                   onClick={handleClose}
                   disabled={status.state === 'uploading'}
-                  className="font-headline text-[11px] font-bold uppercase tracking-widest text-primary-text/50 hover:text-primary-text transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto font-headline text-[11px] font-bold uppercase tracking-widest text-primary-text/50 hover:text-primary-text transition-colors disabled:opacity-50 py-2"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={status.state === 'uploading'}
-                  className="bg-accent text-on-accent px-8 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50 disabled:hover:scale-100"
+                  className="w-full sm:w-auto bg-accent text-on-accent px-8 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100"
                 >
                   {status.state === 'uploading' ? (
                      <>Publishing...</>

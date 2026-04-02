@@ -56,10 +56,10 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-full max-w-4xl bg-card-bg border border-white/10 rounded-[32px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.9)] flex flex-col max-h-[90vh]"
+          className="relative w-[95vw] md:w-[90vw] max-w-4xl bg-card-bg border border-white/10 rounded-[32px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.9)] flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="flex-shrink-0 p-6 md:p-8 border-b border-white/5 flex justify-between items-center bg-card-bg/50 backdrop-blur-md">
+          <div className="flex-shrink-0 p-4 md:p-8 border-b border-white/5 flex justify-between items-center bg-card-bg/50 backdrop-blur-md">
             <div>
               <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-1 block italic">Refining Perspective</span>
               <h2 className="font-headline font-bold text-xl uppercase tracking-wider text-primary-text">Crop Image</h2>
@@ -75,7 +75,7 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
           {/* Main Content Area (Scrollable) */}
           <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
             {/* Cropper Container - Fixed Height */}
-            <div className="relative h-[300px] md:h-[400px] flex-shrink-0 bg-[#0a0a0a] border-b border-white/5">
+            <div className="relative h-[250px] sm:h-[350px] md:h-[450px] flex-shrink-0 bg-[#0a0a0a] border-b border-white/5">
               <Cropper
                 image={image}
                 crop={crop}
@@ -92,7 +92,7 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
             </div>
 
             {/* Controls Section */}
-            <div className="p-6 md:p-8 space-y-8">
+            <div className="p-4 md:p-8 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
                 {/* Aspect Ratios */}
                 <div className="space-y-4">
@@ -137,12 +137,12 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
 
           {/* Footer - Fixed Bottom */}
           <div className="flex-shrink-0 p-6 md:p-8 border-t border-white/5 bg-card-bg/50 backdrop-blur-md">
-            <div className="flex justify-end gap-6 items-center">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 sm:gap-6 items-center">
               <button
                 type="button"
                 onClick={onCancel}
                 disabled={isProcessing}
-                className="font-headline text-[11px] font-bold uppercase tracking-widest text-primary-text/40 hover:text-primary-text transition-colors disabled:opacity-30"
+                className="w-full sm:w-auto font-headline text-[11px] font-bold uppercase tracking-widest text-primary-text/40 hover:text-primary-text transition-colors disabled:opacity-30 py-2"
               >
                 Discard
               </button>
@@ -150,7 +150,7 @@ export default function ImageCropModal({ isOpen, image, onCancel, onCropComplete
                 type="button"
                 onClick={handleApplyCrop}
                 disabled={isProcessing}
-                className="bg-accent text-on-accent px-10 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl shadow-accent/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50 disabled:hover:scale-100"
+                className="w-full sm:w-auto bg-accent text-on-accent px-10 py-4 rounded-full font-headline font-bold text-xs uppercase tracking-widest shadow-xl shadow-accent/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100"
               >
                 {isProcessing ? (
                   <>
