@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import { loginAdmin, subscribeToAuthChanges, logoutAdmin } from '../firebase/services/authService'
-import { fetchProjects } from '../firebase/services/projectService'
+import { fetchProjects, deleteProject } from '../firebase/services/projectService'
 import { useNavigate } from 'react-router-dom'
 import { fetchContacts } from '../firebase/services/contactService'
 import { getSettings, updateSetting } from '../firebase/services/settingsService'
@@ -17,6 +17,7 @@ export default function Admin() {
   const [contacts, setContacts] = useState([])
   const [currentTab, setCurrentTab] = useState('projects')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editProjectData, setEditProjectData] = useState(null)
   const [settings, setSettings] = useState({})
   const [uploadingSlot, setUploadingSlot] = useState(null)
   const [isAuthChecking, setIsAuthChecking] = useState(true)
@@ -87,37 +88,52 @@ export default function Admin() {
     }
   }
 
+  const handleDeleteProject = async (id, e) => {
+    e.stopPropagation()
+    if (window.confirm("Are you sure you want to delete this project?")) {
+      try {
+        await deleteProject(id)
+        const data = await fetchProjects()
+        setProjects(data)
+      } catch (err) {
+        window.alert("Failed to delete: " + err.message)
+      }
+    }
+  }
+
+  const handleEditProject = (project, e) => {
+    e.stopPropagation()
+    setEditProjectData(project)
+    setIsModalOpen(true)
+  }
+
   const handleImageUpdate = async (slot, e) => {
     const file = e.target.files[0]
     if (!file) return
 
     setUploadingSlot(slot)
-    setUploadingSlot(slot)
     try {
-      const reader = new FileReader()
-      reader.onloadend = async () => {
-        const base64String = reader.result.split(',')[1] // Strip the data:image/png;base64, prefix
-        
-        const resp = await fetch('/api/upload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            image: base64String
-          })
-        })
-        
-        const data = await resp.json()
-        if (!data.success) throw new Error(data.message || 'Upload failed')
-
-        const imageUrl = data.data.url
-        await updateSetting(slot, imageUrl)
-        
-        setSettings(prev => ({ ...prev, [slot]: imageUrl }))
-        window.alert('Secondary-level assets updated successfully via secure proxy!')
+      const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
+      if (!apiKey || apiKey === 'YOUR_IMGBB_API_KEY_HERE') {
+        throw new Error('Database Error: VITE_IMGBB_API_KEY missing in .env');
       }
-      reader.readAsDataURL(file)
+
+      const bbData = new FormData();
+      bbData.append('image', file);
+
+      const resp = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        body: bbData,
+      });
+      
+      const data = await resp.json()
+      if (!data.success) throw new Error(data.error?.message || 'Upload failed')
+
+      const imageUrl = data.data.url
+      await updateSetting(slot, imageUrl)
+      
+      setSettings(prev => ({ ...prev, [slot]: imageUrl }))
+      window.alert('Global assets updated successfully!')
     } catch (err) {
       console.error(err)
       window.alert('Failed to update image: ' + err.message)
@@ -211,8 +227,9 @@ export default function Admin() {
 
       <ProjectModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => { setIsModalOpen(false); setEditProjectData(null); }} 
         onSuccess={handleProjectSuccess} 
+        initialData={editProjectData}
       />
 
       <aside className="w-20 md:w-64 border-r border-white/5 flex flex-col bg-background z-20">
@@ -279,6 +296,7 @@ export default function Admin() {
                   <th className="p-6 font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40">Classification</th>
                   <th className="p-6 font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40">Date</th>
                   <th className="p-6 font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 text-right">Visibility</th>
+                  <th className="p-6 font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-primary-text/80">
@@ -298,6 +316,14 @@ export default function Admin() {
                       <span className="text-[8px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-accent/30 text-accent bg-accent/5">
                         Published
                       </span>
+                    </td>
+                    <td className="p-6 text-right flex justify-end gap-2 items-center">
+                       <button onClick={(e) => handleEditProject(row, e)} className="p-2 bg-white/5 hover:bg-accent/20 rounded-lg text-primary-text/60 hover:text-accent transition-colors flex items-center justify-center" title="Edit Project">
+                         <span className="material-symbols-outlined text-[16px]">edit</span>
+                       </button>
+                       <button onClick={(e) => handleDeleteProject(row.id, e)} className="p-2 bg-white/5 hover:bg-red-500/20 rounded-lg text-primary-text/60 hover:text-red-400 transition-colors flex items-center justify-center" title="Delete Project">
+                         <span className="material-symbols-outlined text-[16px]">delete</span>
+                       </button>
                     </td>
                   </tr>
                 ))}

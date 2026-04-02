@@ -133,24 +133,34 @@ export default function ProjectDetails() {
       </section>
 
       {/* Image Gallery Bento Grid */}
+      {project.images && project.images.length > 1 && (
       <section className="py-24 px-6 md:px-16 bg-section-tone">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
+            {project.images[1] && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: customEase }} className="md:col-span-5 h-[600px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3DyW3T00hb6R0qqoBh8rtybbgNhHaemUt-FIGp6BJt5AZnNezp4ySbvhLyBfFnoaiCh2SteRKHcSde1i9PuCbyv68IxVrw1MNmJbGXnjqurzMGXtr_WPIxbehO39LeCIMyKGjBTH-5S6TYsEbLeKc6747aqbDMMtwwBmE00FLAgm0OcG0ET-oOzqLw5ywZn2Eb0huWFpMLfJlkTUQWGkiTL0Kn97wZF2TGX_PwYIJfYg0HwWvSeJJMAD7HLsbcZu9h3x7lOV4Upmc" alt="Interior architectural detail" loading="lazy" />
+              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[1]} alt="Architectural detail" loading="lazy" />
             </motion.div>
+            )}
+            {project.images[2] && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1, ease: customEase }} className="md:col-span-7 h-[280px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbo_EdStQMs7fOy5oIB3kyfoN38-gC-8VxrG-gzeUTro7_zWf6Za4fa3Et4FM9alG_yq0AFPZnb_ssuDmjXuggHfENKp1gAc7CwpJhwd9m_Fn2y966cbjoUh68JDhgCqlc1Tfnosy0-hMzTJVnpp68LLjtrq9B5JprTsU2yXquRnoGiptQzuiQ4-UwqRdtFEc2SOm_RNn9kzmRKo5pfCCs3UlRd1KD1qLHFT8IOLs1hSa6eYHDWbPfRKdq0ccmOOl_lQAgw772l4iO" alt="Tectonic texture study" loading="lazy" />
+              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[2]} alt="Tectonic texture study" loading="lazy" />
             </motion.div>
+            )}
+            {project.images[3] && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2, ease: customEase }} className="md:col-span-4 h-[280px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7W3yNBZqd7gw8x49eMEU5LyvouMqmRpBXNit6gs0KXZrhh6CN2q90tcCwHZWdlH-NP9UvrN8-cFiP3B2f9uTAqoAR-0oRLoi2EhH7AyQtJj3VXtgBcmw5cpqWkan2xLgIXdGNjNNPhswpKkGKKTMNca9XDyyhyvKYWn_nOfshTB7aSpL7UHYVCbTrSih8bZutUTy4GRxsDBKbry-rzYIHIgVQPEX6oSzrkZp5cKgVEK_MPIDiY6uV78uQZG0sU2NydqQiBagYd-XT" alt="Interior living space" loading="lazy" />
+              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[3]} alt="Interior living space" loading="lazy" />
             </motion.div>
+            )}
+            {project.images[4] && (
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3, ease: customEase }} className="md:col-span-3 h-[280px] rounded-xl overflow-hidden">
-              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6f7yzNFaVR260gvesJWSg2wTCdk4nu8P9aZT62khIAE6l2w8dw4ihmOFZR4F9wrG-ks0KgYPRxxj9F7zD_0maNXDiIdl7VKdTUeN-Qxyx-YPe-62cewZtZGRYGjUvEsbzrcimyyEGisHhS_I78K3Up0F9mU-s1sYDxOaN00j9u1_rzk78utNEdQr6OXlmvOVybylg-rTXbgojdt2EPjKiJczeUDoBBPcPkJRX8gfrlsy3LbdyygHuWSvTkFe1NOT4dceWQj-fAkMb" alt="Detail of sculptural staircase" loading="lazy" />
+              <img className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" src={project.images[4]} alt="Detail of sculptural staircase" loading="lazy" />
             </motion.div>
+            )}
           </div>
         </div>
       </section>
+      )}
 
       {/* Description Section */}
       <section className="py-32 px-6 md:px-16 bg-background">
@@ -181,6 +191,23 @@ export default function ProjectDetails() {
       </section>
 
       {/* 3D Model Placeholder */}
+      {project.splineUrl ? (
+        <section className="py-24 px-6 md:px-16 bg-section-tone">
+          <div className="max-w-7xl mx-auto">
+            <div className="relative w-full aspect-video md:aspect-[21/9] bg-surface-lowest rounded-xl overflow-hidden group border border-white/5">
+              <iframe
+                src={project.splineUrl}
+                frameBorder="0"
+                width="100%"
+                height="100%"
+                title={`3D Model for ${project.title}`}
+                className="w-full h-full border-none pointer-events-auto"
+                style={{ minHeight: '600px' }}
+              ></iframe>
+            </div>
+          </div>
+        </section>
+      ) : (
       <section className="py-24 px-6 md:px-16 bg-section-tone">
         <div className="max-w-7xl mx-auto">
           <div className="relative w-full aspect-video md:aspect-[21/9] bg-surface-lowest rounded-xl overflow-hidden grid-bg flex items-center justify-center group border border-white/5">
@@ -190,20 +217,8 @@ export default function ProjectDetails() {
               </div>
               <div className="absolute text-center">
                 <h3 className="font-headline font-extrabold text-xl tracking-[0.2em] text-primary-text uppercase mb-2">INTERACTIVE 3D MODEL</h3>
-                <p className="font-label text-[10px] tracking-[0.1em] text-accent/50">DRAG TO EXPLORE VOLUME</p>
+                <p className="font-label text-[10px] tracking-[0.1em] text-accent/50">NO MODEL PROVIDED FOR THIS VOLUME</p>
               </div>
-            </div>
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 glass-card p-2 rounded-full border border-white/10">
-              {[
-                { icon: 'zoom_in', label: 'Zoom In' },
-                { icon: 'rotate_right', label: 'Rotate Right' },
-                { icon: 'view_in_ar', label: 'View in AR' },
-                { icon: 'fullscreen', label: 'Fullscreen' }
-              ].map(control => (
-                <button key={control.icon} className="w-12 h-12 flex items-center justify-center text-primary-text hover:text-accent transition-colors" aria-label={control.label}>
-                  <span className={`material-symbols-outlined ${control.icon === 'view_in_ar' ? 'filled' : ''}`}>{control.icon}</span>
-                </button>
-              ))}
             </div>
             <div className="absolute top-8 left-8 flex flex-col gap-1" aria-hidden="true">
               <span className="font-label text-[8px] tracking-[0.3em] text-accent/40 uppercase">X: 65.9422° N</span>
@@ -212,6 +227,7 @@ export default function ProjectDetails() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Next Project CTA */}
       <section className="py-32 px-6 md:px-16 text-center bg-background">

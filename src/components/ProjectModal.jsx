@@ -1,18 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { createProject } from '../firebase/services/projectService';
+import { createProject, updateProject } from '../firebase/services/projectService';
 
-export default function ProjectModal({ isOpen, onClose, onSuccess }) {
+export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }) {
   const [formData, setFormData] = useState({ title: '', description: '', splineUrl: '' });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  
+  const [additionalFiles, setAdditionalFiles] = useState([]);
+  const [additionalPreviews, setAdditionalPreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+
   const [status, setStatus] = useState({ state: 'idle', message: '' });
+
+  useEffect(() => {
+    if (initialData && isOpen) {
+      setFormData({
+        title: initialData.title || '',
+        description: initialData.description || '',
+        splineUrl: initialData.splineUrl || '',
+      });
+      setImagePreview(initialData.images?.[0] || '');
+      setExistingImages(initialData.images || []);
+      setAdditionalPreviews([]);
+      setAdditionalFiles([]);
+      setImageFile(null);
+      setStatus({ state: 'idle', message: '' });
+    } else if (isOpen) {
+      setFormData({ title: '', description: '', splineUrl: '' });
+      setImageFile(null);
+      setImagePreview('');
+      setAdditionalFiles([]);
+      setAdditionalPreviews([]);
+      setExistingImages([]);
+      setStatus({ state: 'idle', message: '' });
+    }
+  }, [initialData, isOpen]);
 
   const handleClose = () => {
     if (status.state === 'uploading') return;
     setFormData({ title: '', description: '', splineUrl: '' });
     setImageFile(null);
     setImagePreview('');
+    setAdditionalFiles([]);
+    setAdditionalPreviews([]);
+    setExistingImages([]);
     setStatus({ state: 'idle', message: '' });
     onClose();
   };
@@ -30,10 +62,26 @@ export default function ProjectModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
+  const handleAdditionalFilesChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 4) {
+      setStatus({ state: 'error', message: 'Maximum 4 additional images allowed.' });
+      return;
+    }
+    for (let f of files) {
+      if (f.size > 10 * 1024 * 1024) {
+         setStatus({ state: 'error', message: 'All images must be less than 10MB.' });
+         return;
+      }
+    }
+    setAdditionalFiles(files);
+    setAdditionalPreviews(files.map(f => URL.createObjectURL(f)));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.description || !imageFile) {
-      setStatus({ state: 'error', message: 'Title, details, and an image are required.' });
+    if (!formData.title || !formData.description || (!imageFile && !imagePreview)) {
+      setStatus({ state: 'error', message: 'Title, details, and a featured image are required.' });
       return;
     }
 
@@ -45,33 +93,62 @@ export default function ProjectModal({ isOpen, onClose, onSuccess }) {
         throw new Error('Database Error: VITE_IMGBB_API_KEY missing in .env');
       }
 
-      // Prepare Image for ImgBB
-      const bbData = new FormData();
-      bbData.append('image', imageFile);
+      let featuredUrl = imagePreview; // Default to existing
+      if (imageFile) {
+        const bbData = new FormData();
+        bbData.append('image', imageFile);
 
-      const resp = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: 'POST',
-        body: bbData,
-      });
-      const data = await resp.json();
+        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+          method: 'POST',
+          body: bbData,
+        });
+        const data = await resp.json();
 
-      if (!data.success) {
-         throw new Error(data.error?.message || 'Failed to upload image to ImgBB');
+        if (!data.success) {
+           throw new Error(data.error?.message || 'Failed to upload featured image to ImgBB');
+        }
+        featuredUrl = data.data.url;
       }
 
-      const imageUrl = data.data.url;
+      // Upload additional images
+      const additionalUrls = [];
+      if (additionalFiles.length > 0) {
+        setStatus({ state: 'uploading', message: 'Uploading additional images...' });
+        for (const file of additionalFiles) {
+          const bData = new FormData();
+          bData.append('image', file);
+          const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+            method: 'POST', body: bData
+          });
+          const d = await res.json();
+          if (!d.success) throw new Error(d.error?.message || 'Failed to upload additional image');
+          additionalUrls.push(d.data.url);
+        }
+      }
 
       setStatus({ state: 'uploading', message: 'Saving project to Archive...' });
+      
+      let finalImages = [featuredUrl];
+      if (additionalFiles.length > 0) {
+        finalImages = [...finalImages, ...additionalUrls];
+      } else if (existingImages.length > 1) {
+        finalImages = [...finalImages, ...existingImages.slice(1)];
+      }
 
-      // Save to Firestore Database
-      await createProject({
+      const projectPayload = {
         title: formData.title,
         description: formData.description,
         splineUrl: formData.splineUrl || null,
-        images: [imageUrl]
-      });
+        images: finalImages
+      };
 
-      setStatus({ state: 'success', message: 'Project Published!' });
+      if (initialData) {
+        await updateProject(initialData.id, projectPayload);
+        setStatus({ state: 'success', message: 'Project Updated!' });
+      } else {
+        await createProject(projectPayload);
+        setStatus({ state: 'success', message: 'Project Published!' });
+      }
       
       // Notify parent admin dashboard to refetch the table
       onSuccess();
@@ -110,7 +187,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess }) {
             <div className="flex justify-between items-center mb-8">
               <div>
                 <span className="font-label text-[10px] tracking-[0.3em] uppercase text-accent mb-2 block">Database Entry</span>
-                <h2 className="font-headline font-extrabold text-2xl uppercase tracking-wider text-primary-text">Add New Piece</h2>
+                <h2 className="font-headline font-extrabold text-2xl uppercase tracking-wider text-primary-text">{initialData ? 'Edit Piece' : 'Add New Piece'}</h2>
               </div>
               <button type="button" onClick={handleClose} className="w-10 h-10 bg-white/5 rounded-full text-primary-text/40 hover:bg-white/10 hover:text-red-400 transition-colors flex items-center justify-center" aria-label="Close modal">
                 <span className="material-symbols-outlined text-[20px]">close</span>
@@ -202,6 +279,41 @@ export default function ProjectModal({ isOpen, onClose, onSuccess }) {
                 </div>
               </div>
 
+              <div className="space-y-2 pt-2">
+                <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 ml-1">Additional Images (Up to 4)</label>
+                <div className="w-full border-2 border-dashed border-white/10 rounded-xl p-6 flex flex-col items-center justify-center gap-4 bg-background/30 hover:bg-background/50 transition-colors relative overflow-hidden group min-h-[120px]">
+                  {additionalPreviews.length > 0 ? (
+                    <div className="flex gap-2 w-full p-2 relative z-10 justify-center">
+                      {additionalPreviews.map((src, i) => (
+                        <div key={i} className="relative w-16 h-16 shrink-0 rounded-md border border-white/10 overflow-hidden">
+                          <img src={src} className="w-full h-full object-cover" alt="preview" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (existingImages.length > 1) ? (
+                    <div className="flex gap-2 w-full p-2 relative z-10 justify-center">
+                      {existingImages.slice(1).map((src, i) => (
+                        <div key={i} className="relative w-16 h-16 shrink-0 rounded-md border border-white/10 overflow-hidden">
+                          <img src={src} className="w-full h-full object-cover" alt="existing" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="relative z-10 text-center font-body text-sm text-primary-text/60">
+                      <span className="text-accent font-medium">Select up to 4 images</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleAdditionalFilesChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                    disabled={status.state === 'uploading'}
+                  />
+                </div>
+              </div>
+
               <div className="pt-8 border-t border-white/5 flex justify-end gap-6 items-center">
                 <button
                   type="button"
@@ -219,7 +331,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess }) {
                   {status.state === 'uploading' ? (
                      <>Publishing...</>
                   ) : (
-                     <><span className="material-symbols-outlined text-[1rem]">cloud_done</span> Publish</>
+                     <><span className="material-symbols-outlined text-[1rem]">cloud_done</span> {initialData ? 'Update' : 'Publish'}</>
                   )}
                 </button>
               </div>

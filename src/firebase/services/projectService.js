@@ -1,4 +1,4 @@
-import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, getDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../config";
 
 const PROJECTS_COLLECTION = "projects";
@@ -50,5 +50,31 @@ export const getProjectById = async (id) => {
   } catch (error) {
     console.error("Error fetching project:", error);
     throw new Error("Failed to load project details");
+  }
+};
+
+export const updateProject = async (id, updatedData) => {
+  try {
+    const docRef = doc(db, PROJECTS_COLLECTION, id);
+    const updatePayload = {
+      ...updatedData,
+      updatedAt: serverTimestamp()
+    };
+    await updateDoc(docRef, updatePayload);
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw new Error("Failed to update project entry");
+  }
+};
+
+export const deleteProject = async (id) => {
+  try {
+    const docRef = doc(db, PROJECTS_COLLECTION, id);
+    await deleteDoc(docRef);
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw new Error("Failed to delete project entry");
   }
 };
