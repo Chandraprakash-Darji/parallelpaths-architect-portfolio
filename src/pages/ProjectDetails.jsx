@@ -194,8 +194,8 @@ export default function ProjectDetails() {
         </div>
       </section>
 
-      {/* 3D Model Placeholder */}
-      {project.splineUrl ? (
+      {/* 3D Model Section */}
+      {project.splineUrl && project.splineUrl.includes('prod.spline.design') ? (
         <section className="py-24 px-6 md:px-16 bg-section-tone">
           <div className="max-w-7xl mx-auto">
             <div className="relative w-full aspect-video md:aspect-[21/9] bg-surface-lowest rounded-xl overflow-hidden group border border-white/5">
@@ -207,7 +207,22 @@ export default function ProjectDetails() {
                 title={`3D Model for ${project.title}`}
                 className="w-full h-full border-none pointer-events-auto"
                 style={{ minHeight: '600px' }}
+                loading="lazy"
               ></iframe>
+            </div>
+          </div>
+        </section>
+      ) : project.splineUrl ? (
+        <section className="py-24 px-6 md:px-16 bg-section-tone text-center">
+          <div className="max-w-7xl mx-auto">
+            <div className="relative w-full aspect-video md:aspect-[21/9] bg-surface-lowest rounded-xl overflow-hidden grid-bg flex flex-col items-center justify-center border border-white/5 p-12">
+               <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 mb-6 border border-red-500/20">
+                 <span className="material-symbols-outlined text-3xl">error</span>
+               </div>
+               <h3 className="font-headline font-extrabold text-2xl tracking-[0.1em] text-primary-text uppercase mb-2">3D PREVIEW UNAVAILABLE</h3>
+               <p className="font-label text-[10px] tracking-[0.2em] text-primary-text/40 max-w-sm mx-auto leading-relaxed uppercase">
+                 The model link provided is incompatible or private. Please ensure the project utilizes a public Spline embed URL.
+               </p>
             </div>
           </div>
         </section>
@@ -221,7 +236,7 @@ export default function ProjectDetails() {
               </div>
               <div className="absolute text-center">
                 <h3 className="font-headline font-extrabold text-xl tracking-[0.2em] text-primary-text uppercase mb-2">INTERACTIVE 3D MODEL</h3>
-                <p className="font-label text-[10px] tracking-[0.1em] text-accent/50">NO MODEL PROVIDED FOR THIS VOLUME</p>
+                <p className="font-label text-[10px] tracking-[0.1em] text-accent/50 uppercase">NO MODEL PROVIDED FOR THIS VOLUME</p>
               </div>
             </div>
             <div className="absolute top-8 left-8 flex flex-col gap-1" aria-hidden="true">

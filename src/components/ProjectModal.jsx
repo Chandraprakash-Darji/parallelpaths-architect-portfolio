@@ -171,6 +171,28 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
       return;
     }
 
+    // Spline URL Validation
+    if (formData.splineUrl) {
+      const isMySpline = formData.splineUrl.includes('my.spline.design');
+      const isValid = formData.splineUrl.includes('prod.spline.design');
+      
+      if (isMySpline) {
+        setStatus({ 
+          state: 'error', 
+          message: 'Please use the Export → Embed link (prod.spline.design) instead of the editor link.' 
+        });
+        return;
+      }
+      
+      if (!isValid) {
+        setStatus({ 
+          state: 'error', 
+          message: 'Invalid Spline link. Please use a valid embed URL from Spline.' 
+        });
+        return;
+      }
+    }
+
     setStatus({ state: 'uploading', message: 'Optimizing and syncing assets...' });
 
     try {
@@ -422,10 +444,19 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                   type="url"
                   value={formData.splineUrl}
                   onChange={(e) => setFormData({...formData, splineUrl: e.target.value})}
-                  className="w-full bg-background/50 border border-white/10 rounded-xl p-4 font-body text-primary-text placeholder:text-white/10 focus:border-accent focus:outline-none transition-colors"
-                  placeholder="https://my.spline.design/..."
+                  className={`w-full bg-background/50 border rounded-xl p-4 font-body text-primary-text placeholder:text-white/10 focus:outline-none transition-colors ${
+                    formData.splineUrl && formData.splineUrl.includes('my.spline.design') 
+                      ? 'border-orange-500/50 focus:border-orange-500' 
+                      : 'border-white/10 focus:border-accent'
+                  }`}
+                  placeholder="https://prod.spline.design/..."
                   disabled={status.state === 'uploading'}
                 />
+                {formData.splineUrl && formData.splineUrl.includes('my.spline.design') && (
+                  <p className="text-[9px] text-orange-400/80 mt-1 ml-1 leading-relaxed uppercase tracking-wider font-medium">
+                    ⚠️ Tip: Use the dynamic "Embed" link from Spline (Export → Embed) instead of the editor URL.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 pt-2">
