@@ -29,11 +29,12 @@ export default function ProjectDetails() {
           setProject({
             ...data,
             subtitle: data.subtitle || 'Architectural Study',
-            image: data.images?.[0] || '',
+            image: data.mainImage || data.images?.[0]?.url || data.images?.[0] || '',
             location: data.location || 'Undisclosed Sector',
             scale: data.scale || 'Undisclosed Area',
             completion: data.completion || 'In Progress',
-            materials: data.materials || 'Concrete, Obsidian, Glass'
+            materials: data.materials || 'Concrete, Obsidian, Glass',
+            philosophy: data.philosophy || data.description || 'No philosophy provided.'
           })
         }
       } catch (err) {
@@ -67,7 +68,7 @@ export default function ProjectDetails() {
     <main>
       <Helmet>
         <title>{`${project.title} | Parallel Paths Portfolio`}</title>
-        <meta name="description" content={`${project.description} - Architectural study by Parallel Paths.`} />
+        <meta name="description" content={`${project.philosophy || project.description} - Architectural study by Parallel Paths.`} />
       </Helmet>
 
       {/* Hero Section */}
@@ -101,7 +102,7 @@ export default function ProjectDetails() {
               transition={{ duration: 0.8, delay: 0.3, ease: customEase }}
               className="font-body text-xl md:text-2xl text-primary-text/70 max-w-xl leading-relaxed"
             >
-              {project.description}
+              {project.philosophy || project.description}
             </motion.p>
           </div>
           <div className="hidden lg:block pb-4">
@@ -174,7 +175,7 @@ export default function ProjectDetails() {
           </div>
           <div className="w-full md:w-2/3">
             <p className="font-body text-2xl md:text-3xl font-light text-primary-text leading-snug mb-12">
-              The structure utilizes cast-in-place concrete infused with local volcanic ash, creating a tonal bridge between the built environment and the obsidian bedrock it occupies.
+              {project.philosophy || project.description}
             </p>
             <div className="grid grid-cols-2 gap-12 border-t border-white/5 pt-12">
               {[

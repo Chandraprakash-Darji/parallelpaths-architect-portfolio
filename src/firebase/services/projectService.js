@@ -20,22 +20,30 @@ export const fetchProjects = async () => {
 
 export const createProject = async (projectData) => {
   try {
-    if (!projectData.title || !projectData.description || !projectData.images) {
-      throw new Error("Missing required project fields");
+    // Validate required fields
+    if (!projectData.title || !projectData.philosophy || !projectData.images) {
+      const missing = [];
+      if (!projectData.title) missing.push("title");
+      if (!projectData.philosophy) missing.push("philosophy");
+      if (!projectData.images) missing.push("images");
+      throw new Error(`Missing required fields: ${missing.join(", ")}`);
     }
 
+    console.log("--- Firestore Write: Creating Project ---");
+    console.log("Payload:", JSON.stringify(projectData, null, 2));
+
     const docRef = await addDoc(collection(db, PROJECTS_COLLECTION), {
-      title: projectData.title.trim(),
-      description: projectData.description.trim(),
-      images: projectData.images, // Array of URLs
-      splineUrl: projectData.splineUrl || null,
-      createdAt: serverTimestamp()
+      ...projectData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     });
 
+    console.log("Firestore Success: Project ID", docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error("Error creating project:", error);
-    throw new Error("Failed to create project entry");
+    console.error("Firestore Write Error (Create):", error);
+    // Return original firebase error if available, else generic
+    throw new Error(error.message || "Failed to create project entry");
   }
 };
 
@@ -55,16 +63,21 @@ export const getProjectById = async (id) => {
 
 export const updateProject = async (id, updatedData) => {
   try {
+    console.log(`--- Firestore Write: Updating Project ${id} ---`);
+    console.log("Payload:", JSON.stringify(updatedData, null, 2));
+
     const docRef = doc(db, PROJECTS_COLLECTION, id);
     const updatePayload = {
       ...updatedData,
       updatedAt: serverTimestamp()
     };
     await updateDoc(docRef, updatePayload);
+    
+    console.log("Firestore Success: Project updated");
     return { success: true };
   } catch (error) {
-    console.error("Error updating project:", error);
-    throw new Error("Failed to update project entry");
+    console.error("Firestore Write Error (Update):", error);
+    throw new Error(error.message || "Failed to update project entry");
   }
 };
 

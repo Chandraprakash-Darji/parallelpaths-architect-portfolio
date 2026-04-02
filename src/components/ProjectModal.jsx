@@ -9,7 +9,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
   const [formData, setFormData] = useState({ 
     title: '', 
     subtitle: '',
-    description: '', 
+    philosophy: '', 
     splineUrl: '',
     location: '',
     scale: '',
@@ -36,7 +36,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
       setFormData({
         title: initialData.title || '',
         subtitle: initialData.subtitle || '',
-        description: initialData.description || '',
+        philosophy: initialData.philosophy || initialData.description || '',
         splineUrl: initialData.splineUrl || '',
         location: initialData.location || '',
         scale: initialData.scale || '',
@@ -59,7 +59,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
       setFormData({ 
         title: '', 
         subtitle: '',
-        description: '', 
+        philosophy: '', 
         splineUrl: '',
         location: '',
         scale: '',
@@ -81,7 +81,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
     setFormData({ 
       title: '', 
       subtitle: '',
-      description: '', 
+      philosophy: '', 
       splineUrl: '',
       location: '',
       scale: '',
@@ -176,11 +176,15 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
     try {
       console.log("--- Starting Upload Flow ---");
 
-      // 1. Prepare Featured Image
-      let featuredUrl = imagePreview;
+      // 1. Upload Featured Image
+      let featuredUrl = initialData?.mainImage || imagePreview;
       if (croppedBlob) {
-        console.log("Cropping and uploading featured image...");
+        console.log("Uploading featured image to IMGBB...");
         featuredUrl = await uploadToIMGBB(croppedBlob);
+        
+        if (!featuredUrl) {
+          throw new Error("IMGBB failed to return a URL for the featured image.");
+        }
         console.log("Featured image uploaded:", featuredUrl);
       }
 
@@ -190,13 +194,16 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
         console.log(`Optimizing and uploading ${additionalCroppedBlobs.length} additional images...`);
         for (let i = 0; i < additionalCroppedBlobs.length; i++) {
           const blob = additionalCroppedBlobs[i];
-          // Determine if we need to compress (only if not already a cropped blob)
-          // Actually, all blobs should be optimized if they are just raw files
           let finalizedBlob = blob;
           if (blob instanceof File) {
              finalizedBlob = await compressImage(blob, 0.8, 1600);
           }
           const url = await uploadToIMGBB(finalizedBlob);
+          
+          if (!url) {
+            throw new Error(`IMGBB failed to return a URL for additional image ${i + 1}`);
+          }
+          
           additionalUrls.push(url);
           console.log(`Additional image ${i + 1} uploaded:`, url);
         }
@@ -209,8 +216,7 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
         { 
           url: featuredUrl, 
           title: formData.title, 
-          desc: formData.subtitle || "Featured Photo", 
-          type: 'image' 
+          description: formData.subtitle || "Featured Photo"
         }
       ];
 
@@ -220,41 +226,43 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
           finalImages.push({
             url: url,
             title: meta.title || `${formData.title} - View ${i + 1}`,
-            desc: meta.desc || formData.subtitle || "Architectural Detail",
-            type: meta.type || 'image'
+            description: meta.desc || formData.subtitle || "Architectural Detail"
           });
         });
       } else if (existingImages.length > 1) {
-        // Handle migration/preservation of older formats
         const additionalExisting = existingImages.slice(1).map((img, i) => {
           if (typeof img === 'string') {
-            return { url: img, title: '', desc: '', type: 'image' };
+            return { url: img, title: '', description: '' };
           }
-          return img;
+          return {
+            url: img.url,
+            title: img.title || '',
+            description: img.description || img.desc || ''
+          };
         });
         finalImages.push(...additionalExisting);
       }
 
       const projectPayload = {
         title: formData.title,
-        subtitle: formData.subtitle || null,
-        description: formData.description,
-        splineUrl: formData.splineUrl || null,
-        location: formData.location || null,
-        scale: formData.scale || null,
-        completion: formData.completion || null,
-        materials: formData.materials || null,
+        subtitle: formData.subtitle || '',
+        philosophy: formData.philosophy,
+        mainImage: featuredUrl,
+        location: formData.location || '',
+        scale: formData.scale || '',
+        completion: formData.completion || '',
+        materials: formData.materials || '',
+        splineUrl: formData.splineUrl || '',
         images: finalImages
       };
 
-      console.log("Saving to Firestore:", projectPayload);
+      console.log("Final payload build success. Sending to Firestore...");
+      
       if (initialData) {
         await updateProject(initialData.id, projectPayload);
-        console.log("Firestore update success");
         setStatus({ state: 'success', message: 'Project Updated!' });
       } else {
         await createProject(projectPayload);
-        console.log("Firestore creation success");
         setStatus({ state: 'success', message: 'Project Published!' });
       }
       
@@ -352,8 +360,8 @@ export default function ProjectModal({ isOpen, onClose, onSuccess, initialData }
                 <label className="font-label text-[10px] tracking-[0.2em] uppercase text-primary-text/40 ml-1">Architectural Philosophy <span className="text-accent">*</span></label>
                 <textarea
                   rows={3}
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  value={formData.philosophy}
+                  onChange={(e) => setFormData({...formData, philosophy: e.target.value})}
                   className="w-full bg-background/50 border border-white/10 rounded-xl p-4 font-body text-primary-text placeholder:text-white/10 focus:border-accent focus:outline-none transition-colors resize-none"
                   placeholder="Describe the structural philosophy..."
                   disabled={status.state === 'uploading'}
