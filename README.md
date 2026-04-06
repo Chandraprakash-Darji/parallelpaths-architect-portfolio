@@ -17,7 +17,7 @@
 
 **Parallel Paths** is a production-deployed portfolio platform for architect **Parag Jadhav**. It combines a visually immersive public-facing site with a fully functional, auth-protected Content Management System — enabling real-time project publishing, page asset management, and client inquiry tracking, all without touching the codebase after deployment.
 
-> **Live Site →** [paragjadhavarchitect-portfolio.vercel.app](https://paragjadhavarchitect-portfolio.vercel.app)
+> **Live Site →** [https://parallelpaths.vercel.app/](https://parallelpaths.vercel.app/)
 
 ---
 
