@@ -1,27 +1,33 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // --- PROJECTS COLLECTION ---
+    // Read is public (portfolio is publicly viewable)
+    // All writes require a valid, authenticated session
     match /projects/{projectId} {
       allow read: if true;
-      allow create: if true; 
-      allow update, delete: if request.auth != null;
+      allow create, update, delete: if request.auth != null;
     }
 
     // --- SETTINGS COLLECTION ---
+    // Read is public (hero images etc. are fetched client-side)
+    // Writes require authentication
     match /settings/{settingId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
     // --- CONTACTS COLLECTION ---
+    // Anyone can submit a contact form (unauthenticated create is intentional)
+    // Only authenticated admin can read, update, or delete inquiries
     match /contacts/{contactId} {
       allow create: if true;
       allow read, update, delete: if request.auth != null;
     }
 
     // --- DEFAULT SAFETY LOCK ---
+    // Deny everything not explicitly matched above
     match /{document=**} {
       allow read, write: if false;
     }
